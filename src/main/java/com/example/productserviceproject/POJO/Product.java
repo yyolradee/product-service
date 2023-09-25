@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -20,6 +21,14 @@ public class Product implements Serializable {
     private List<Review> reviews;
 
     public Product() {
+    }
+
+    public Product(String name, String description, String img_path, double price, String category, String shop_id) {
+        this(null, name, description, img_path, price, category, shop_id, new ArrayList<Review>());
+    }
+
+    public Product(String name) {
+        this(null, name, null, null, 0.0, null, null, new ArrayList<>());
     }
 
     public Product(String _id, String name, String description, String img_path, double price, String category, String shop_id, List<Review> reviews) {
