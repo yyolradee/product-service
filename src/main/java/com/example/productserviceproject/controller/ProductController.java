@@ -105,7 +105,11 @@ public class ProductController {
     @RequestMapping("api/getProductById/{id}")
     public ResponseEntity<?> getProductById(@PathVariable("id") String id) {
         Optional<Product> out = productService.getProductByIdService(id);
-        return ResponseEntity.ok(out);
+        if (out.isEmpty()) {
+            return ResponseEntity.ok("Product not found");
+        } else {
+            return ResponseEntity.ok(out);
+        }
     }
 
     // add review
