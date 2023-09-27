@@ -92,13 +92,16 @@ public class ProductController {
     // get product by category
     @RequestMapping(value = "api/getProductsByCategory/{category}")
     public ResponseEntity<?> getProductsByCategory(@PathVariable("category") String category) {
-        return ResponseEntity.ok(category);
+        List<Product> out = this.productService.getProductByCategory(category);
+        return ResponseEntity.ok(out);
     }
 
     // get product by name
-    @RequestMapping(value = "api/getProductsByCategory/{name}")
+    @RequestMapping(value = "api/getProductsByName/{name}")
     public ResponseEntity<?> getProductsByName(@PathVariable("name") String name) {
-        return ResponseEntity.ok(name);
+
+        List<Product> out = this.productService.getProductByName(name);
+        return ResponseEntity.ok(out);
     }
 
     // get product by id
