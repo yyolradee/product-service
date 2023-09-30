@@ -35,7 +35,8 @@ public class ProductController {
         String img_path = body.get("img_path");
         double price = Double.parseDouble(body.get("price"));
         String category = body.get("category");
-        boolean added = productService.addProductService(new Product(name, description, img_path, price, category, null));
+        String create_at = body.get("create_at");
+        boolean added = productService.addProductService(new Product(name, description, img_path, price, category, null, create_at, create_at));
         if (added) {
             return ResponseEntity.ok("Product added successfully");
         } else {
@@ -55,12 +56,14 @@ public class ProductController {
         String img_path = body.get("img_path");
         double price = Double.parseDouble(body.get("price"));
         String category = body.get("category");
+        String edit_at = body.get("edit_at");
 
         product.setName(name);
         product.setDescription(description);
         product.setImg_path(img_path);
         product.setPrice(price);
         product.setCategory(category);
+        product.setEdit_at(edit_at);
 
         boolean edited = productService.editProductService(product);
 
