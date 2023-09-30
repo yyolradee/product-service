@@ -1,7 +1,10 @@
 package com.example.productserviceproject.POJO;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
+@Data
 public class Review implements Serializable {
     private String content;
     private double rate;
@@ -16,37 +19,5 @@ public class Review implements Serializable {
         this.rate = rate;
         this.owner_name = owner_name;
         this.isAnonymous = isAnonymous;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public double getRate() {
-        return rate;
-    }
-
-    public void setRate(double rate) {
-        this.rate = rate;
-    }
-
-    public String getOwner_name() {
-        return owner_name;
-    }
-
-    public void setOwner_name(String owner_name) {
-        this.owner_name = owner_name;
-    }
-
-    public boolean isAnonymous() {
-        return isAnonymous;
-    }
-
-    public void setAnonymous(boolean anonymous) {
-        isAnonymous = anonymous;
     }
 }
