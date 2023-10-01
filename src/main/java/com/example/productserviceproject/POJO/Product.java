@@ -1,6 +1,7 @@
 package com.example.productserviceproject.POJO;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.util.List;
 @Data
 @Document("ProductService")
 public class Product implements Serializable {
+    @Id
     private String _id;
     private String name;
     private String description;
