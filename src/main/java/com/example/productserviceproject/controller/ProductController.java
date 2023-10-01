@@ -39,12 +39,11 @@ public class ProductController {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         String create_at = now.toString();
 
-        boolean added = productService.addProductService(new Product(name, description, img_path, price, category, null, create_at, create_at));
-
-        if (added) {
-            return ResponseEntity.ok("Product added successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add product");
+        try {
+            Product added = productService.addProductService(new Product(name, description, img_path, price, category, null, create_at, create_at));
+            return ResponseEntity.ok(added);
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -70,12 +69,11 @@ public class ProductController {
         product.setCategory(category);
         product.setEdit_at(edit_at);
 
-        boolean edited = productService.editProductService(product);
-
-        if (edited) {
-            return ResponseEntity.ok("Product edited successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to edit product");
+        try {
+            Product edited = productService.editProductService(product);
+            return ResponseEntity.ok(edited);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -139,11 +137,11 @@ public class ProductController {
         double rating = calculateRating(reviews);
         product.setRating(rating);
 
-        boolean addReview = productService.editProductService(product);
-        if (addReview) {
+        try {
+            Product addReview = productService.editProductService(product);
             return ResponseEntity.ok("Review added successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add review");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
