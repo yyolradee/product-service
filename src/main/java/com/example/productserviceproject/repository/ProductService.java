@@ -18,13 +18,23 @@ public class ProductService {
     }
 
     @CacheEvict(value = "productList", allEntries = true)
-    public Product addProductService(Product p) {
-        return this.repository.insert(p);
+    public boolean addProductService(Product p) {
+        try {
+            this.repository.insert(p);
+            return true;
+        }catch (Exception e) {
+            return false;
+        }
     }
 
     @CacheEvict(value = "productList", allEntries = true)
-    public Product editProductService(Product p) {
-        return this.repository.save(p);
+    public boolean editProductService(Product p) {
+        try {
+            this.repository.save(p);
+            return true;
+        }catch (Exception e) {
+            return false;
+        }
     }
 
     @CacheEvict(value = "productList", allEntries = true)
