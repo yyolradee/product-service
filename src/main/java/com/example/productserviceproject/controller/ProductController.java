@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,8 +36,11 @@ public class ProductController {
         String img_path = body.get("img_path");
         double price = Double.parseDouble(body.get("price"));
         String category = body.get("category");
-        String create_at = body.get("create_at");
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        String create_at = now.toString();
+
         boolean added = productService.addProductService(new Product(name, description, img_path, price, category, null, create_at, create_at));
+
         if (added) {
             return ResponseEntity.ok("Product added successfully");
         } else {
@@ -56,7 +60,8 @@ public class ProductController {
         String img_path = body.get("img_path");
         double price = Double.parseDouble(body.get("price"));
         String category = body.get("category");
-        String edit_at = body.get("edit_at");
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        String edit_at = now.toString();
 
         product.setName(name);
         product.setDescription(description);
@@ -102,7 +107,6 @@ public class ProductController {
     // get product by name
     @RequestMapping(value = "api/getProductsByName/{name}")
     public ResponseEntity<?> getProductsByName(@PathVariable("name") String name) {
-
         List<Product> out = this.productService.getProductByName(name);
         return ResponseEntity.ok(out);
     }
