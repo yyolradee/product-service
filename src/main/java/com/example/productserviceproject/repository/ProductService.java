@@ -62,7 +62,7 @@ public class ProductService {
         return this.repository.findByName(name);
     }
 
-    @Cacheable(value = "productList ")
+    @Cacheable(value = "productList")
     public List<Product> getProductByCategory(String category) {
         return this.repository.findByCategory(category);
     }
