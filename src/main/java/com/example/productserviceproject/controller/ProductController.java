@@ -28,7 +28,7 @@ public class ProductController {
     }
 
     // add new product
-    @RequestMapping(value = "api/product/addProduct", method = RequestMethod.POST)
+    @RequestMapping(value = "api/products", method = RequestMethod.POST)
     public ResponseEntity<?> addProduct(@RequestBody MultiValueMap<String, String> requestBody) {
         Map<String, String> body = requestBody.toSingleValueMap();
         String name = body.get("name");
@@ -48,7 +48,7 @@ public class ProductController {
     }
 
     // edit product info
-    @RequestMapping(value = "api/product/editProduct/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "api/products/{id}", method = RequestMethod.POST)
     public ResponseEntity<?> editProduct(@PathVariable("id") String id, @RequestBody MultiValueMap<String, String> requestBody) {
         Optional<Product> out = productService.getProductByIdService(id);
         Product product = out.get();
@@ -78,7 +78,7 @@ public class ProductController {
     }
 
     // delete product
-    @RequestMapping(value = "api/product/deleteProduct/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "api/products/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteProduct(@PathVariable("id") String id) {
         boolean deleted = productService.deleteProductService(id);
         if (deleted) {
@@ -89,29 +89,29 @@ public class ProductController {
     }
 
     // get all product
-    @RequestMapping(value = "api/getAllProducts")
+    @RequestMapping(value = "api/products")
     public ResponseEntity<?> getAllProducts() {
         List<Product> out = this.productService.getAllProductsService();
         return ResponseEntity.ok(out);
     }
 
     // get product by category
-    @RequestMapping(value = "api/getProductsByCategory/{category}")
-    public ResponseEntity<?> getProductsByCategory(@PathVariable("category") String category) {
+    @RequestMapping(value = "api/products/categories/{category_name}")
+    public ResponseEntity<?> getProductsByCategory(@PathVariable("category_name") String category) {
         List<Product> out = this.productService.getProductByCategory(category);
         return ResponseEntity.ok(out);
     }
 
     // get product by name
-    @RequestMapping(value = "api/getProductsByName/{name}")
-    public ResponseEntity<?> getProductsByName(@PathVariable("name") String name) {
+    @RequestMapping(value = "api/products/name/{product_name}")
+    public ResponseEntity<?> getProductsByName(@PathVariable("product_name") String name) {
         List<Product> out = this.productService.getProductByName(name);
         return ResponseEntity.ok(out);
     }
 
     // get product by id
-    @RequestMapping("api/getProductById/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") String id) {
+    @RequestMapping("api/products/id/{product_id}")
+    public ResponseEntity<?> getProductById(@PathVariable("product_id") String id) {
         Optional<Product> out = productService.getProductByIdService(id);
         if (out.isEmpty()) {
             return ResponseEntity.ok("Product not found");
@@ -121,8 +121,8 @@ public class ProductController {
     }
 
     // add review
-    @RequestMapping(value = "api/review/{id}", method = RequestMethod.POST)
-    public ResponseEntity<?> addReview(@PathVariable("id") String id, @RequestBody MultiValueMap<String, String> requestBody) {
+    @RequestMapping(value = "api/products/{product_id}/reviews", method = RequestMethod.POST)
+    public ResponseEntity<?> addReview(@PathVariable("product_id") String id, @RequestBody MultiValueMap<String, String> requestBody) {
         Optional<Product> out = productService.getProductByIdService(id);
         Product product = out.get();
         List<Review> reviews = product.getReviews();
