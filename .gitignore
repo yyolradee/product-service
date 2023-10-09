@@ -18,7 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
-src/main/resources/application.properties
+**/src/main/resources/application.properties
 
 ### NetBeans ###
 /nbproject/private/
@@ -32,4 +32,4 @@ build/
 
 ### VS Code ###
 .vscode/
-.DS_Store
+**/.DS_Store
