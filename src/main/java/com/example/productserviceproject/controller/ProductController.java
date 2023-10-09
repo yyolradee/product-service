@@ -40,7 +40,7 @@ public class ProductController {
         String create_at = now.toString();
 
         try {
-            Product added = productService.addProductService(new Product(name, description, img_path, price, category, null, create_at, create_at));
+            Product added = productService.addProductService(new Product(name, description, img_path, price, category, create_at, create_at));
             return ResponseEntity.ok(added);
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
