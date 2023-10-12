@@ -14,6 +14,10 @@ public class Review implements Serializable {
     public Review() {
     }
 
+    public Review(String content, double rate, String owner_name) {
+        this(content, rate, owner_name, false);
+    }
+
     public Review(String content, double rate, String owner_name, boolean isAnonymous) {
         this.content = content;
         this.rate = rate;
