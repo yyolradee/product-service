@@ -72,33 +72,52 @@ public class ProductController {
 
     // edit product info
     @RequestMapping(value = "api/products/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<?> editProduct(@PathVariable("id") String id, @RequestBody MultiValueMap<String, String> requestBody) {
-        Optional<Product> out = productService.getProductByIdService(id);
-        Product product = out.get();
-
-        Map<String, String> body = requestBody.toSingleValueMap();
-        String name = body.get("name");
-        String description = body.get("description");
-        String img_path = body.get("img_path");
-        double price = Double.parseDouble(body.get("price"));
-        String category = body.get("category");
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        String edit_at = now.toString();
-
-        product.setName(name);
-        product.setDescription(description);
-        product.setImg_path(img_path);
-        product.setPrice(price);
-        product.setCategory(category);
-        product.setEdit_at(edit_at);
-
+    public ResponseEntity<?> editProduct(@ModelAttribute ProductRequest requestBody, @PathVariable("id") String id) {
         try {
+            this.validateProductData(requestBody); //validate data
+            Optional<Product> out = productService.getProductByIdService(id);
+            Product product = out.get();
+
+            String name = requestBody.getName();
+            String description = requestBody.getDescription();
+            double price = requestBody.getPrice();
+            String category = requestBody.getCategory();
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            String edit_at = now.toString();
+
+            // ---------- Upload image in to firebase -----------
+            MultipartFile image = requestBody.getImage();
+            String img_path;
+            if (!image.isEmpty()) {
+                // Remove the old image first, if it exists
+                Optional<Product> getProductById = productService.getProductByIdService(id);
+                if (getProductById.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("Product not found", "Product ID not exist"));
+                } else {
+                    fileService.deleteFile(getProductById.get().getImg_path());
+                }
+
+                File file = fileService.convertMultiPartToFile(image);
+                img_path = fileService.uploadFile(file, file.getName());
+                product.setImg_path(img_path);
+            }
+            // ---------- End Upload image in to firebase -----------
+
+            product.setName(name);
+            product.setDescription(description);
+            product.setPrice(price);
+            product.setCategory(category);
+            product.setEdit_at(edit_at);
+
             Product edited = productService.editProductService(product);
             return ResponseEntity.ok(edited);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Updating product fail", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Updating new product fail cause server", e.getMessage()));
         }
     }
+
 
     // delete product
     @RequestMapping(value = "api/products/{id}", method = RequestMethod.DELETE)
