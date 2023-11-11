@@ -1,4 +1,4 @@
-package com.example.productserviceproject.repository;
+package com.example.productserviceproject.service;
 
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;

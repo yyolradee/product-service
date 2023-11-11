@@ -1,4 +1,4 @@
-package com.example.productserviceproject.repository;
+package com.example.productserviceproject.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
