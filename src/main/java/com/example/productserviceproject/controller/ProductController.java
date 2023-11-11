@@ -2,12 +2,7 @@ package com.example.productserviceproject.controller;
 
 import com.example.productserviceproject.POJO.*;
 import com.example.productserviceproject.repository.FileService;
-import com.example.productserviceproject.repository.JwtService;
 import com.example.productserviceproject.repository.ProductService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,14 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -36,10 +29,6 @@ public class ProductController {
     private ProductService productService;
     @Autowired
     private FileService fileService;
-    @Autowired
-    private JwtService jwtService;
-
-
     // add new product
     @RequestMapping(value = "api/products", method = RequestMethod.POST)
     public ResponseEntity<?> addProduct(@ModelAttribute ProductRequest requestBody, @RequestHeader(value = "Authorization", required = true) String token) {
@@ -301,28 +290,6 @@ public class ProductController {
         }
         if (review.getRate() > 5 || review.getRate() <= 0) {
             throw new IllegalArgumentException("Rating must be greater than zero and less than 5.");
-        }
-    }
-
-    private static List<Shop> shopsParseJsonResponse(String jsonResponse) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(jsonResponse, new TypeReference<List<Shop>>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
-    }
-
-    private List<Product> parseProductsListResponse(ResponseEntity<String> responseEntity) throws IOException {
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            String responseBody = responseEntity.getBody();
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            // Deserialize the JSON response into a List<Shop>
-            return objectMapper.readValue(responseBody, new TypeReference<List<Product>>() {});
-        } else {
-            throw new IllegalArgumentException("Error parsing ShopService response");
         }
     }
 
