@@ -56,4 +56,10 @@ public class ProductService {
     public List<Product> getProductByCategory(String category) {
         return this.repository.findByCategory(category);
     }
+
+    @Cacheable(value = "productList")
+    public List<Product> getProductByShopId(String shop_id) {return  this.repository.findByShop(shop_id);};
+
+    @Cacheable
+    public List<Product> getProductByShopIdAndProductId(String shop_id, String product_id) {return this.repository.findByShopAndProductId(shop_id, product_id);}
 }

@@ -21,20 +21,21 @@ public class Product implements Serializable {
     private double rating;
     private String create_at;
     private String edit_at;
+    private String shop_id;
     private List<Review> reviews;
 
     public Product() {
     }
 
-    public Product(String name, String description, String img_path, double price, String category, String create_at, String edit_at) {
-        this(null, name, description, img_path, price, category, new ArrayList<Review>(), create_at, edit_at);
+    public Product(String name, String description, String img_path, double price, String category, String shop_id,String create_at, String edit_at) {
+        this(null, name, description, img_path, price, category, new ArrayList<Review>(), shop_id, create_at, edit_at);
     }
 
     public Product(String name) {
-        this(null, name, null, null, 0.0, null, new ArrayList<>(), null, null);
+        this(null, name, null, null, 0.0, null, new ArrayList<>(),null ,null, null);
     }
 
-    public Product(String _id, String name, String description, String img_path, double price, String category, List<Review> reviews, String create_at, String edit_at) {
+    public Product(String _id, String name, String description, String img_path, double price, String category, List<Review> reviews, String shop_id,String create_at, String edit_at) {
         this._id = _id;
         this.name = name;
         this.description = description;
@@ -42,6 +43,7 @@ public class Product implements Serializable {
         this.price = price;
         this.category = category;
         this.reviews = reviews;
+        this.shop_id = shop_id;
         this.create_at = create_at;
         this.edit_at = edit_at;
     }

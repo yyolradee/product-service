@@ -14,4 +14,10 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
     @Query(value="{category:'?0'}")
     public List<Product> findByCategory(String category);
+
+    @Query(value="{shop_id:'?0'}")
+    public List<Product> findByShop(String shop_id);
+
+    @Query(value = "{ 'shop_id' : ?0, '_id' : ?1 }")
+    public List<Product> findByShopAndProductId(String shop_id, String _id);
 }
