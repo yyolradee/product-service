@@ -11,7 +11,7 @@ public class ProductCreatedEvent {
     private String _id;
     private String name;
     private String description;
-    private String img_path;
+    private MultipartFile image;
     private double price;
     private String category;
     private double rating;

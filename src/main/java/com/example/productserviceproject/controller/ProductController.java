@@ -5,9 +5,12 @@ import com.example.productserviceproject.controller.rest.WriteProductController;
 import com.example.productserviceproject.controller.write.CreateProductCommand;
 import com.example.productserviceproject.model.command.ProductCreateModel;
 import com.example.productserviceproject.model.command.ProductUpdateModel;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @CrossOrigin
 @RestController
@@ -15,39 +18,57 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
     private final WriteProductController writeProductController;
     private final ReadProductController readProductController;
+    private final CommandGateway commandGateway;
 
     @Autowired
-    public ProductController(WriteProductController writeProductController, ReadProductController readProductController) {
+    public ProductController(WriteProductController writeProductController, ReadProductController readProductController, CommandGateway commandGateway) {
         this.writeProductController = writeProductController;
         this.readProductController = readProductController;
+        this.commandGateway = commandGateway;
     }
 
 //     Write Operations
-    @PostMapping
-    public String addProduct(@RequestBody ProductCreateModel model, @RequestHeader(value = "Authorization", required = true) String token) {
+    @PostMapping()
+    public ResponseEntity<?> addProduct(@ModelAttribute ProductCreateModel model, @RequestHeader(value = "Authorization", required = true) String token) {
         CreateProductCommand command = CreateProductCommand.builder()
+                ._id(UUID.randomUUID().toString())
                 .name(model.getName())
                 .description(model.getDescription())
                 .price(model.getPrice())
                 .category(model.getCategory())
                 .image(model.getImage())
-                .token(token)
                 .build();
 
-        String result;
         try {
-            result = String.valueOf(writeProductController.addProduct(command));
-        }
-        catch (Exception e) {
-            result = e.getLocalizedMessage();
-        }
+            ResponseEntity<?> writeProductResponse = writeProductController.addProduct(model, token);
 
-        return result;
+            if (writeProductResponse.getStatusCode().is2xxSuccessful()) {
+                System.out.println("😊");
+                String result = commandGateway.sendAndWait(command);
+
+                return writeProductResponse;
+            } else {
+                // If writeProductController response is not successful, return its response
+                return writeProductResponse;
+            }
+
+        } catch (Exception e) {
+            // Handle the exception
+            return ResponseEntity.status(500).body("Failed to add product");
+        }
     }
 
 //    @PutMapping("/{id}")
-//    public ResponseEntity<?> editProduct(@PathVariable String id, @RequestBody ProductUpdateModel model) {
-//        return writeProductController.editProduct(id, command);
+//    public ResponseEntity<?> editProduct(@PathVariable String id, @ModelAttribute ProductUpdateModel model, @RequestHeader(value = "Authorization", required = true) String token) {
+//        CreateProductCommand command = CreateProductCommand.builder()
+//                .id(id)
+//                .name(model.getName())
+//                .description(model.getDescription())
+//                .price(model.getPrice())
+//                .category(model.getCategory())
+//                .image(model.getImage())
+//                .build();
+//        return writeProductController.editProduct(model, token, id);
 //    }
 
     @DeleteMapping("/{id}")

@@ -1,14 +1,10 @@
 package com.example.productserviceproject.service.write;
 
-import com.example.productserviceproject.model.query.ProductQuery;
+import com.example.productserviceproject.model.ProductModel;
 import com.example.productserviceproject.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductWriteService {
@@ -19,12 +15,12 @@ public class ProductWriteService {
     }
 
     @CacheEvict(value = "productList", allEntries = true)
-    public ProductQuery addProductService(ProductQuery p) {
+    public ProductModel addProductService(ProductModel p) {
         return this.repository.insert(p);
     }
 
     @CacheEvict(value = "productList", allEntries = true)
-    public ProductQuery editProductService(ProductQuery p) {
+    public ProductModel editProductService(ProductModel p) {
         return this.repository.save(p);
     }
 

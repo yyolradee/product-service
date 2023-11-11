@@ -9,6 +9,7 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class ProductCommandHandler {
     private String _id;
     private String name;
     private String description;
-    private String img_path;
+    private MultipartFile image;
     private double price;
     private String category;
     private double rating;
@@ -38,10 +39,11 @@ public class ProductCommandHandler {
 
     @EventSourcingHandler
     public void on(ProductCreatedEvent productCreatedEvent) {
+        System.out.println("ON AGGREGATE");
         this._id = productCreatedEvent.get_id();
         this.name = productCreatedEvent.getName();
         this.description = productCreatedEvent.getDescription();
-        this.img_path = productCreatedEvent.getImg_path();
+        this.image = productCreatedEvent.getImage();
         this.price = productCreatedEvent.getPrice();
         this.category = productCreatedEvent.getCategory();
         this.rating = productCreatedEvent.getRating();

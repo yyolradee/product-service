@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Document("ProductServiceRead")
+@Document("ProductService")
 public class ProductQuery implements Serializable {
     @Id
     private String _id;

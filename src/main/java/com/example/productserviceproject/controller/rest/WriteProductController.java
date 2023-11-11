@@ -1,14 +1,16 @@
 package com.example.productserviceproject.controller.rest;
 
 import com.example.productserviceproject.controller.write.CreateProductCommand;
-import com.example.productserviceproject.model.query.ProductQuery;
+import com.example.productserviceproject.model.ProductModel;
 import com.example.productserviceproject.model.Shop;
+import com.example.productserviceproject.model.command.ProductCreateModel;
+import com.example.productserviceproject.model.command.ProductUpdateModel;
 import com.example.productserviceproject.service.FileService;
 import com.example.productserviceproject.model.ErrorResponse;
 import com.example.productserviceproject.service.read.ProductReadService;
-import com.example.productserviceproject.model.ProductRequest;
 import com.example.productserviceproject.service.write.ProductWriteService;
 import com.example.productserviceproject.model.Review;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -38,10 +40,11 @@ public class WriteProductController {
     private ProductReadService productReadService;
     @Autowired
     private FileService fileService;
+
     // add new product
-    public ResponseEntity<?> addProduct(@ModelAttribute CreateProductCommand requestBody) {
+    public ResponseEntity<?> addProduct(@ModelAttribute ProductCreateModel requestBody, @RequestParam("token") String token) {
         try {
-            String[] tokens = requestBody.getToken().split(" ");
+            String[] tokens = token.split(" ");
             // check token
             if (tokens.length > 1) {
                 String bearerToken = tokens[1];
@@ -75,10 +78,11 @@ public class WriteProductController {
                     } else {
                         img_path = null;
                     }
+
                     // ---------- End Upload image in to firebase -----------
 
-                    ProductQuery added = productWriteService.addProductService(new ProductQuery(name, description, img_path, price, category, shop_id, create_at, create_at));
-                    return ResponseEntity.ok(added);
+                    ProductModel added = productWriteService.addProductService(new ProductModel(name, description, img_path, price, category, shop_id, create_at, create_at));
+                    return  ResponseEntity.ok(added);
                 }
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Adding new product fail", "Invalid Token"));
@@ -90,7 +94,7 @@ public class WriteProductController {
     }
 
     // edit product info
-    public ResponseEntity<?> editProduct(@ModelAttribute CreateProductCommand requestBody, @PathVariable("id") String id, @RequestHeader(value = "Authorization", required = true) String token) {
+    public ResponseEntity<?> editProduct(@ModelAttribute ProductUpdateModel requestBody, @RequestParam("token") String token, @RequestParam("id") String id) {
         try {
             String[] tokens = token.split(" ");
             // check token
@@ -101,7 +105,7 @@ public class WriteProductController {
                 // check send api to shop
                 if (shopResponse.getStatusCode().is2xxSuccessful()) {
                     String shopId = shopResponse.getBody().get(0).get_id();
-                    ResponseEntity<List<ProductQuery>> checkOwnProduct = getProductsByShopIdAndProductId(shopId, id);
+                    ResponseEntity<List<ProductModel>> checkOwnProduct = getProductsByShopIdAndProductId(shopId, id);
 
                     // check is have shop, own shop, own product
                     if (shopId.length() <= 0 || checkOwnProduct.getBody().size() <= 0) {
@@ -109,8 +113,8 @@ public class WriteProductController {
                     }
 
                     this.validateProductData(requestBody); //validate data
-                    Optional<ProductQuery> out = productReadService.getProductByIdService(id);
-                    ProductQuery productQuery = out.get();
+                    Optional<ProductModel> out = productReadService.getProductByIdService(id);
+                    ProductModel productModel = out.get();
 
                     String name = requestBody.getName();
                     String description = requestBody.getDescription();
@@ -124,7 +128,7 @@ public class WriteProductController {
                     String img_path;
                     if (!image.isEmpty()) {
                         // Remove the old image first, if it exists
-                        Optional<ProductQuery> getProductById = productReadService.getProductByIdService(id);
+                        Optional<ProductModel> getProductById = productReadService.getProductByIdService(id);
                         if (getProductById.isEmpty()) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("Product not found", "Product ID not exist"));
                         } else {
@@ -133,17 +137,17 @@ public class WriteProductController {
 
                         File file = fileService.convertMultiPartToFile(image);
                         img_path = fileService.uploadFile(file, file.getName());
-                        productQuery.setImg_path(img_path);
+                        productModel.setImg_path(img_path);
                     }
                     // ---------- End Upload image in to firebase -----------
 
-                    productQuery.setName(name);
-                    productQuery.setDescription(description);
-                    productQuery.setPrice(price);
-                    productQuery.setCategory(category);
-                    productQuery.setEdit_at(edit_at);
+                    productModel.setName(name);
+                    productModel.setDescription(description);
+                    productModel.setPrice(price);
+                    productModel.setCategory(category);
+                    productModel.setEdit_at(edit_at);
 
-                    ProductQuery edited = productWriteService.editProductService(productQuery);
+                    ProductModel edited = productWriteService.editProductService(productModel);
                     return ResponseEntity.ok(edited);
                 }
             }
@@ -167,7 +171,7 @@ public class WriteProductController {
             // check send api to shop
             if (shopResponse.getStatusCode().is2xxSuccessful()) {
                 String shopId = shopResponse.getBody().get(0).get_id();
-                ResponseEntity<List<ProductQuery>> checkOwnProduct = getProductsByShopIdAndProductId(shopId, id);
+                ResponseEntity<List<ProductModel>> checkOwnProduct = getProductsByShopIdAndProductId(shopId, id);
 
                 // check is have shop, own shop, own product
                 if (shopId.length() <= 0 || checkOwnProduct.getBody().size() <= 0) {
@@ -197,7 +201,22 @@ public class WriteProductController {
         return rating;
     }
 
-    public void validateProductData(CreateProductCommand productRequest) throws Exception {
+    public void validateProductData(ProductCreateModel productRequest) throws Exception {
+        if (productRequest.getPrice() < 0) {
+            throw new IllegalArgumentException("Price must be greater than or equal to Zero");
+        }
+        if (productRequest.getName() == null || productRequest.getName().isBlank()) {
+            throw new IllegalArgumentException("Name is Required");
+        }
+        if (productRequest.getDescription() == null || productRequest.getDescription().isBlank()) {
+            throw new IllegalArgumentException("Description is Required");
+        }
+        if (productRequest.getCategory() == null || productRequest.getCategory().isBlank()) {
+            throw new IllegalArgumentException("Category is Required");
+        }
+    }
+
+    public void validateProductData(ProductUpdateModel productRequest) throws Exception {
         if (productRequest.getPrice() < 0) {
             throw new IllegalArgumentException("Price must be greater than or equal to Zero");
         }
@@ -235,8 +254,8 @@ public class WriteProductController {
         return restTemplate.exchange(apiUrl, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Shop>>() {});
     }
 
-    public ResponseEntity<List<ProductQuery>> getProductsByShopIdAndProductId(@PathVariable("shop_id") String shopId, @PathVariable("product_id") String productId) {
-        List<ProductQuery> out = this.productReadService.getProductByShopIdAndProductId(shopId, productId);
+    public ResponseEntity<List<ProductModel>> getProductsByShopIdAndProductId(@PathVariable("shop_id") String shopId, @PathVariable("product_id") String productId) {
+        List<ProductModel> out = this.productReadService.getProductByShopIdAndProductId(shopId, productId);
         return ResponseEntity.ok(out);
     }
 

@@ -1,6 +1,5 @@
-package com.example.productserviceproject.model.query;
+package com.example.productserviceproject.model;
 
-import com.example.productserviceproject.model.Review;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

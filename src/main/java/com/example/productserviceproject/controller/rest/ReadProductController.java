@@ -1,10 +1,9 @@
 package com.example.productserviceproject.controller.rest;
 
-import com.example.productserviceproject.model.query.ProductQuery;
+import com.example.productserviceproject.model.ProductModel;
 import com.example.productserviceproject.model.ErrorResponse;
 import com.example.productserviceproject.service.read.ProductReadService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -28,37 +27,37 @@ public class ReadProductController {
 
     // get all product
     public ResponseEntity<?> getAllProducts() {
-        List<ProductQuery> out = this.productReadService.getAllProductsService();
+        List<ProductModel> out = this.productReadService.getAllProductsService();
         return ResponseEntity.ok(out);
     }
 
     // get product by category
     public ResponseEntity<?> getProductsByCategory(@PathVariable("category_name") String category) {
-        List<ProductQuery> out = this.productReadService.getProductByCategory(category);
+        List<ProductModel> out = this.productReadService.getProductByCategory(category);
         return ResponseEntity.ok(out);
     }
 
     // get product by shop_id
-    public ResponseEntity<List<ProductQuery>> getProductsByShopId(@PathVariable("shop_id") String shopId) {
-        List<ProductQuery> out = this.productReadService.getProductByShopId(shopId);
+    public ResponseEntity<List<ProductModel>> getProductsByShopId(@PathVariable("shop_id") String shopId) {
+        List<ProductModel> out = this.productReadService.getProductByShopId(shopId);
         return ResponseEntity.ok(out);
     }
 
     // get product by shop_id and product_id
-    public ResponseEntity<List<ProductQuery>> getProductsByShopIdAndProductId(@PathVariable("shop_id") String shopId, @PathVariable("product_id") String productId) {
-        List<ProductQuery> out = this.productReadService.getProductByShopIdAndProductId(shopId, productId);
+    public ResponseEntity<List<ProductModel>> getProductsByShopIdAndProductId(@PathVariable("shop_id") String shopId, @PathVariable("product_id") String productId) {
+        List<ProductModel> out = this.productReadService.getProductByShopIdAndProductId(shopId, productId);
         return ResponseEntity.ok(out);
     }
 
     // get product by name
     public ResponseEntity<?> getProductsByName(@PathVariable("product_name") String name) {
-        List<ProductQuery> out = this.productReadService.getProductByName(name);
+        List<ProductModel> out = this.productReadService.getProductByName(name);
         return ResponseEntity.ok(out);
     }
 
     // get product by id
     public ResponseEntity<?> getProductById(@PathVariable("product_id") String id) {
-        Optional<ProductQuery> out = productReadService.getProductByIdService(id);
+        Optional<ProductModel> out = productReadService.getProductByIdService(id);
         if (out.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("Product not found", "Product ID not exist"));
         } else {
