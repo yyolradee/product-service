@@ -5,7 +5,6 @@ import com.example.productserviceproject.controller.rest.WriteProductController;
 import com.example.productserviceproject.controller.write.CreateProductCommand;
 import com.example.productserviceproject.model.command.ProductCreateModel;
 import com.example.productserviceproject.model.command.ProductUpdateModel;
-import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
