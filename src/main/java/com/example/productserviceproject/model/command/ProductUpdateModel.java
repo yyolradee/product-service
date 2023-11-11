@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Document("ProductService")
 public class ProductUpdateModel implements Serializable {
     private String name;
     private String description;

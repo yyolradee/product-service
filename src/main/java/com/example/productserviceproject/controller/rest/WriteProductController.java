@@ -41,8 +41,7 @@ public class WriteProductController {
     // add new product
     public ResponseEntity<?> addProduct(@ModelAttribute CreateProductCommand requestBody) {
         try {
-//            String[] tokens = requestBody.getToken().split(" ");
-            String[] tokens = "wdw".split(" ");
+            String[] tokens = requestBody.getToken().split(" ");
             // check token
             if (tokens.length > 1) {
                 String bearerToken = tokens[1];

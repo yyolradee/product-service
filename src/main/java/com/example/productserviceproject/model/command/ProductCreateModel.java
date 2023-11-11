@@ -11,19 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Document("ProductService")
 public class ProductCreateModel implements Serializable {
     private String name;
     private String description;
     private MultipartFile image;
     private double price;
     private String category;
+    private String token;
 
-    public ProductCreateModel(String name, String description, MultipartFile image, double price, String category) {
+    public ProductCreateModel(String name, String description, MultipartFile image, double price, String category, String token) {
         this.name = name;
         this.description = description;
         this.image = image;
         this.price = price;
         this.category = category;
+        this.token = token;
     }
 }

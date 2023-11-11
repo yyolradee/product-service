@@ -31,7 +31,7 @@ public class ProductController {
                 .price(model.getPrice())
                 .category(model.getCategory())
                 .image(model.getImage())
-//                .token(model.getToken())
+                .token(token)
                 .build();
 
         String result;
