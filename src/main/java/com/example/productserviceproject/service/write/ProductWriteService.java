@@ -12,29 +12,29 @@ import java.util.Optional;
 
 @Service
 public class ProductWriteService {
-//    @Autowired
-//    private ProductRepository repository;
-//    public ProductWriteService(ProductRepository repository) {
-//        this.repository = repository;
-//    }
-//
-//    @CacheEvict(value = "productList", allEntries = true)
-//    public ProductQuery addProductService(ProductQuery p) {
-//        return this.repository.insert(p);
-//    }
-//
-//    @CacheEvict(value = "productList", allEntries = true)
-//    public ProductQuery editProductService(ProductQuery p) {
-//        return this.repository.save(p);
-//    }
-//
-//    @CacheEvict(value = "productList", allEntries = true)
-//    public boolean deleteProductService(String id) {
-//        try {
-//            this.repository.deleteById(id);
-//            return true;
-//        }catch (Exception e) {
-//            return false;
-//        }
-//    }
+    @Autowired
+    private ProductRepository repository;
+    public ProductWriteService(ProductRepository repository) {
+        this.repository = repository;
+    }
+
+    @CacheEvict(value = "productList", allEntries = true)
+    public ProductQuery addProductService(ProductQuery p) {
+        return this.repository.insert(p);
+    }
+
+    @CacheEvict(value = "productList", allEntries = true)
+    public ProductQuery editProductService(ProductQuery p) {
+        return this.repository.save(p);
+    }
+
+    @CacheEvict(value = "productList", allEntries = true)
+    public boolean deleteProductService(String id) {
+        try {
+            this.repository.deleteById(id);
+            return true;
+        }catch (Exception e) {
+            return false;
+        }
+    }
 }

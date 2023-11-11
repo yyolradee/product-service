@@ -18,14 +18,12 @@ public class ProductCreateModel implements Serializable {
     private MultipartFile image;
     private double price;
     private String category;
-    private String token;
 
-    public ProductCreateModel(String name, String description, MultipartFile image, double price, String category, String token) {
+    public ProductCreateModel(String name, String description, MultipartFile image, double price, String category) {
         this.name = name;
         this.description = description;
         this.image = image;
         this.price = price;
         this.category = category;
-        this.token = token;
     }
 }
