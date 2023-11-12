@@ -1,33 +1,60 @@
 package com.example.productserviceproject.repository;
 
+import com.example.productserviceproject.config.FirebaseConfig;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
 import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
 public class FileService {
 
+    @Autowired
+    private FirebaseConfig firebaseConfig;
+
     public String uploadFile(File file, String fileName) throws IOException {
         BlobId blobId = BlobId.of("product-service-sop.appspot.com", fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType("media")
-                .setMetadata(ImmutableMap.of("contentDisposition", "inline"))
+                .setMetadata(Map.of("contentDisposition", "inline"))
                 .build();
-        Credentials credentials = GoogleCredentials.fromStream(new FileInputStream("firebasePrivateKey.json"));
+
+        // Decode the Base64-encoded private key
+        byte[] decodedBytes = Base64.getMimeDecoder().decode(firebaseConfig.getPrivateKey()
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s", ""));
+
+        // Convert the decoded bytes to a string
+        String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+        System.out.println("Decoded String: " + decodedString);
+
+        // Create GoogleCredentials from the decoded string
+        Credentials credentials = GoogleCredentials.fromStream(
+                new ByteArrayInputStream(decodedString.getBytes())
+        );
+
+        // Use the credentials to create a Storage object
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+
+        // Upload the file to Google Cloud Storage
         Blob created = storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+
+        // Delete the local file
         file.delete();
+
+        // Return the media link of the uploaded file
         return created.getMediaLink();
     }
 
