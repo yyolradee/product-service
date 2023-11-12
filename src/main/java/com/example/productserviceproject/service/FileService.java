@@ -24,7 +24,7 @@ public class FileService {
                 .setContentType("media")
                 .setMetadata(ImmutableMap.of("contentDisposition", "inline"))
                 .build();
-        Credentials credentials = GoogleCredentials.fromStream(new FileInputStream("firebasePrivateKey.json"));
+        Credentials credentials = GoogleCredentials.fromStream(new FileInputStream("src/main/resources/firebasePrivateKey.json"));
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         Blob created = storage.create(blobInfo, Files.readAllBytes(file.toPath()));
         file.delete();
@@ -58,7 +58,7 @@ public class FileService {
             objectName = objectName.replaceAll("o/", "").replaceAll("\\?generation=\\d+&alt=media", "");
             System.out.println("Object name: " + objectName);
             try {
-                Credentials credentials = GoogleCredentials.fromStream(new FileInputStream("firebasePrivateKey.json"));
+                Credentials credentials = GoogleCredentials.fromStream(new FileInputStream("src/main/resources/firebasePrivateKey.json"));
                 Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
                 BlobId blobId = BlobId.of("product-service-sop.appspot.com", objectName);
                 Blob blob = storage.get(blobId);

@@ -1,11 +1,9 @@
 package com.example.productserviceproject;
 
-import com.example.productserviceproject.confic.AxonXstreamConfig;
+import com.example.productserviceproject.config.AxonXstreamConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 //@EnableCaching
 @SpringBootApplication

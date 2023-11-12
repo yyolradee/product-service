@@ -1,9 +1,11 @@
 package com.example.productserviceproject.handler.event;
 
+import com.example.productserviceproject.controller.rest.WriteProductController;
 import com.example.productserviceproject.event.ProductCreatedEvent;
 import com.example.productserviceproject.model.ErrorResponse;
 import com.example.productserviceproject.model.ProductModel;
 import com.example.productserviceproject.model.Shop;
+import com.example.productserviceproject.model.command.ProductCreateModel;
 import com.example.productserviceproject.repository.ProductRepository;
 import com.example.productserviceproject.service.FileService;
 import com.example.productserviceproject.service.read.ProductReadService;
@@ -31,22 +33,20 @@ public class ProductEventHandler {
     @Autowired
     private final ProductRepository repository;
     @Autowired
-    private ProductWriteService productWriteService;
-    @Autowired
-    private ProductReadService productReadService;
-    @Autowired
-    private FileService fileService;
+    private WriteProductController writeProductController;
 
-    public ProductEventHandler(ProductRepository repository) {
+    public ProductEventHandler(ProductRepository repository, WriteProductController writeProductController) {
         this.repository = repository;
+        this.writeProductController = writeProductController;
     }
 
     @EventHandler
     public void on(ProductCreatedEvent event) {
         System.out.println(event);
-//        ProductModel model = new ProductModel();
-//        BeanUtils.copyProperties(event, model);
-//        repository.save(model);
+        ProductCreateModel model = new ProductCreateModel();
+        BeanUtils.copyProperties(event, model);
+//        ResponseEntity<?> test =  writeProductController.addProduct(model);
+//        System.out.println(test);
     }
 
 }

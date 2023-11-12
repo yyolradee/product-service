@@ -1,4 +1,4 @@
-package com.example.productserviceproject.confic;
+package com.example.productserviceproject.config;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.security.AnyTypePermission;

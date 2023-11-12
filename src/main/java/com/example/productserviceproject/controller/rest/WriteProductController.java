@@ -42,9 +42,9 @@ public class WriteProductController {
     private FileService fileService;
 
     // add new product
-    public ResponseEntity<?> addProduct(@ModelAttribute ProductCreateModel requestBody, @RequestParam("token") String token) {
+    public ResponseEntity<?> addProduct(@ModelAttribute ProductCreateModel requestBody) {
         try {
-            String[] tokens = token.split(" ");
+            String[] tokens = requestBody.getToken().split(" ");
             // check token
             if (tokens.length > 1) {
                 String bearerToken = tokens[1];
@@ -94,9 +94,9 @@ public class WriteProductController {
     }
 
     // edit product info
-    public ResponseEntity<?> editProduct(@ModelAttribute ProductUpdateModel requestBody, @RequestParam("token") String token, @RequestParam("id") String id) {
+    public ResponseEntity<?> editProduct(@ModelAttribute ProductUpdateModel requestBody) {
         try {
-            String[] tokens = token.split(" ");
+            String[] tokens = requestBody.getToken().split(" ");
             // check token
             if (tokens.length > 1) {
                 String bearerToken = tokens[1];
@@ -105,7 +105,7 @@ public class WriteProductController {
                 // check send api to shop
                 if (shopResponse.getStatusCode().is2xxSuccessful()) {
                     String shopId = shopResponse.getBody().get(0).get_id();
-                    ResponseEntity<List<ProductModel>> checkOwnProduct = getProductsByShopIdAndProductId(shopId, id);
+                    ResponseEntity<List<ProductModel>> checkOwnProduct = getProductsByShopIdAndProductId(shopId, requestBody.get_id());
 
                     // check is have shop, own shop, own product
                     if (shopId.length() <= 0 || checkOwnProduct.getBody().size() <= 0) {
@@ -113,7 +113,7 @@ public class WriteProductController {
                     }
 
                     this.validateProductData(requestBody); //validate data
-                    Optional<ProductModel> out = productReadService.getProductByIdService(id);
+                    Optional<ProductModel> out = productReadService.getProductByIdService(requestBody.get_id());
                     ProductModel productModel = out.get();
 
                     String name = requestBody.getName();
@@ -128,7 +128,7 @@ public class WriteProductController {
                     String img_path;
                     if (!image.isEmpty()) {
                         // Remove the old image first, if it exists
-                        Optional<ProductModel> getProductById = productReadService.getProductByIdService(id);
+                        Optional<ProductModel> getProductById = productReadService.getProductByIdService(requestBody.get_id());
                         if (getProductById.isEmpty()) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("Product not found", "Product ID not exist"));
                         } else {

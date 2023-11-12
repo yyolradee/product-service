@@ -19,4 +19,5 @@ public class ProductCreatedEvent {
     private String edit_at;
     private String shop_id;
     private List<Review> reviews;
+    private String token;
 }

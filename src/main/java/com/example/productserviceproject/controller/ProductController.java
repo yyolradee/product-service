@@ -37,10 +37,12 @@ public class ProductController {
                 .price(model.getPrice())
                 .category(model.getCategory())
                 .image(model.getImage())
+                .token(token)
                 .build();
 
+        model.setToken(token);
         try {
-            ResponseEntity<?> writeProductResponse = writeProductController.addProduct(model, token);
+            ResponseEntity<?> writeProductResponse = writeProductController.addProduct(model);
 
             if (writeProductResponse.getStatusCode().is2xxSuccessful()) {
                 System.out.println("😊");
@@ -58,22 +60,60 @@ public class ProductController {
         }
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<?> editProduct(@PathVariable String id, @ModelAttribute ProductUpdateModel model, @RequestHeader(value = "Authorization", required = true) String token) {
-//        CreateProductCommand command = CreateProductCommand.builder()
-//                .id(id)
-//                .name(model.getName())
-//                .description(model.getDescription())
-//                .price(model.getPrice())
-//                .category(model.getCategory())
-//                .image(model.getImage())
-//                .build();
-//        return writeProductController.editProduct(model, token, id);
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editProduct(@PathVariable String id, @ModelAttribute ProductUpdateModel model, @RequestHeader(value = "Authorization", required = true) String token) {
+        CreateProductCommand command = CreateProductCommand.builder()
+                ._id(UUID.randomUUID().toString())
+                .name(model.getName())
+                .description(model.getDescription())
+                .price(model.getPrice())
+                .category(model.getCategory())
+                .image(model.getImage())
+                .token(token)
+                .build();
+        model.setToken(token);
+        model.set_id(id);
+        try {
+            ResponseEntity<?> writeProductResponse = writeProductController.editProduct(model);
+
+            if (writeProductResponse.getStatusCode().is2xxSuccessful()) {
+                System.out.println("😊");
+                String result = commandGateway.sendAndWait(command);
+
+                return writeProductResponse;
+            } else {
+                // If writeProductController response is not successful, return its response
+                return writeProductResponse;
+            }
+
+        } catch (Exception e) {
+            // Handle the exception
+            return ResponseEntity.status(500).body("Failed to update product");
+        }
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable String id, @RequestHeader(value = "Authorization", required = true) String token) {
-        return writeProductController.deleteProduct(id, token);
+        CreateProductCommand command = CreateProductCommand.builder()
+                ._id(UUID.randomUUID().toString())
+                .build();
+        try {
+            ResponseEntity<?> writeProductResponse = writeProductController.deleteProduct(id, token);;
+
+            if (writeProductResponse.getStatusCode().is2xxSuccessful()) {
+                System.out.println("😊");
+                String result = commandGateway.sendAndWait(command);
+
+                return writeProductResponse;
+            } else {
+                // If writeProductController response is not successful, return its response
+                return writeProductResponse;
+            }
+
+        } catch (Exception e) {
+            // Handle the exception
+            return ResponseEntity.status(500).body("Failed to delete product");
+        }
     }
 
 //     Read Operations
