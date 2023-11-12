@@ -12,17 +12,15 @@ public class ProductUpdateModel implements Serializable {
     private MultipartFile image;
     private double price;
     private String category;
-    private String token;
 
     public ProductUpdateModel() {}
 
-    public ProductUpdateModel(String _id, String name, String description, double price, MultipartFile image, String category, String token) {
+    public ProductUpdateModel(String _id, String name, String description, double price, MultipartFile image, String category) {
         this._id = _id;
         this.name = name;
         this.description = description;
         this.image = image;
         this.price = price;
         this.category = category;
-        this.token = token;
     }
 }

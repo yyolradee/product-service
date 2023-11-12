@@ -1,8 +1,7 @@
 package com.example.productserviceproject.controller.write;
 
 import com.example.productserviceproject.event.ProductCreatedEvent;
-import com.example.productserviceproject.model.Review;
-import com.fasterxml.jackson.databind.util.BeanUtil;
+import com.example.productserviceproject.model.command.Reviews;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -26,7 +25,7 @@ public class ProductCommandHandler {
     private String create_at;
     private String edit_at;
     private String shop_id;
-    private List<Review> reviews;
+    private List<Reviews> reviews;
 
     public ProductCommandHandler() {}
 

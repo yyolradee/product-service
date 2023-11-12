@@ -3,8 +3,11 @@ package com.example.productserviceproject.controller;
 import com.example.productserviceproject.controller.rest.ReadProductController;
 import com.example.productserviceproject.controller.rest.WriteProductController;
 import com.example.productserviceproject.controller.write.CreateProductCommand;
+import com.example.productserviceproject.model.ErrorResponse;
 import com.example.productserviceproject.model.command.ProductCreateModel;
+import com.example.productserviceproject.model.command.Reviews;
 import com.example.productserviceproject.model.command.ProductUpdateModel;
+import jakarta.validation.Valid;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +40,9 @@ public class ProductController {
                 .price(model.getPrice())
                 .category(model.getCategory())
                 .image(model.getImage())
-                .token(token)
                 .build();
-
-        model.setToken(token);
         try {
-            ResponseEntity<?> writeProductResponse = writeProductController.addProduct(model);
+            ResponseEntity<?> writeProductResponse = writeProductController.addProduct(model, token);
 
             if (writeProductResponse.getStatusCode().is2xxSuccessful()) {
                 System.out.println("😊");
@@ -56,7 +56,7 @@ public class ProductController {
 
         } catch (Exception e) {
             // Handle the exception
-            return ResponseEntity.status(500).body("Failed to add product");
+            return ResponseEntity.status(500).body(new ErrorResponse("Failed to add product", e.getMessage()));
         }
     }
 
@@ -69,12 +69,10 @@ public class ProductController {
                 .price(model.getPrice())
                 .category(model.getCategory())
                 .image(model.getImage())
-                .token(token)
                 .build();
-        model.setToken(token);
         model.set_id(id);
         try {
-            ResponseEntity<?> writeProductResponse = writeProductController.editProduct(model);
+            ResponseEntity<?> writeProductResponse = writeProductController.editProduct(model, token);
 
             if (writeProductResponse.getStatusCode().is2xxSuccessful()) {
                 System.out.println("😊");
@@ -88,7 +86,7 @@ public class ProductController {
 
         } catch (Exception e) {
             // Handle the exception
-            return ResponseEntity.status(500).body("Failed to update product");
+            return ResponseEntity.status(500).body(new ErrorResponse("Failed to Update product", e.getMessage()));
         }
     }
 
@@ -112,7 +110,32 @@ public class ProductController {
 
         } catch (Exception e) {
             // Handle the exception
-            return ResponseEntity.status(500).body("Failed to delete product");
+            return ResponseEntity.status(500).body(new ErrorResponse("Failed to delete product", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{id}/reviews")
+    public ResponseEntity<?> AddReview(@PathVariable String id, @ModelAttribute @Valid Reviews model , @RequestHeader(value = "Authorization", required = true) String token) {
+        CreateProductCommand command = CreateProductCommand.builder()
+                ._id(UUID.randomUUID().toString())
+                .build();
+        System.out.println(model);
+        try {
+            ResponseEntity<?> writeProductResponse = writeProductController.addReview(id, model, token);;
+
+            if (writeProductResponse.getStatusCode().is2xxSuccessful()) {
+                System.out.println("😊");
+                String result = commandGateway.sendAndWait(command);
+
+                return writeProductResponse;
+            } else {
+                // If writeProductController response is not successful, return its response
+                return writeProductResponse;
+            }
+
+        } catch (Exception e) {
+            // Handle the exception
+            return ResponseEntity.status(500).body(new ErrorResponse("Failed to add review", e.getMessage()));
         }
     }
 
@@ -123,12 +146,12 @@ public class ProductController {
         return readProductController.getAllProducts();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<?> getProductById(@PathVariable String id) {
         return readProductController.getProductById(id);
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<?> getProductByName(@PathVariable String name) {
         return readProductController.getProductsByName(name);
     }

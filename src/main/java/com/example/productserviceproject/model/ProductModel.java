@@ -1,5 +1,6 @@
 package com.example.productserviceproject.model;
 
+import com.example.productserviceproject.model.command.Reviews;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,20 +23,20 @@ public class ProductModel implements Serializable {
     private String create_at;
     private String edit_at;
     private String shop_id;
-    private List<Review> reviews;
+    private List<Reviews> reviews;
 
     public ProductModel() {
     }
 
     public ProductModel(String name, String description, String img_path, double price, String category, String shop_id, String create_at, String edit_at) {
-        this(null, name, description, img_path, price, category, new ArrayList<Review>(), shop_id, create_at, edit_at);
+        this(null, name, description, img_path, price, category, new ArrayList<Reviews>(), shop_id, create_at, edit_at);
     }
 
     public ProductModel(String name) {
         this(null, name, null, null, 0.0, null, new ArrayList<>(),null ,null, null);
     }
 
-    public ProductModel(String _id, String name, String description, String img_path, double price, String category, List<Review> reviews, String shop_id, String create_at, String edit_at) {
+    public ProductModel(String _id, String name, String description, String img_path, double price, String category, List<Reviews> reviews, String shop_id, String create_at, String edit_at) {
         this._id = _id;
         this.name = name;
         this.description = description;

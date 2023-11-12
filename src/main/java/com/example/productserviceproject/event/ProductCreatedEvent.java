@@ -1,6 +1,6 @@
 package com.example.productserviceproject.event;
 
-import com.example.productserviceproject.model.Review;
+import com.example.productserviceproject.model.command.Reviews;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +18,5 @@ public class ProductCreatedEvent {
     private String create_at;
     private String edit_at;
     private String shop_id;
-    private List<Review> reviews;
-    private String token;
+    private List<Reviews> reviews;
 }

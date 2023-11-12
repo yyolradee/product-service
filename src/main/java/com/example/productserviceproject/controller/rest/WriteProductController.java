@@ -1,6 +1,5 @@
 package com.example.productserviceproject.controller.rest;
 
-import com.example.productserviceproject.controller.write.CreateProductCommand;
 import com.example.productserviceproject.model.ProductModel;
 import com.example.productserviceproject.model.Shop;
 import com.example.productserviceproject.model.command.ProductCreateModel;
@@ -9,8 +8,8 @@ import com.example.productserviceproject.service.FileService;
 import com.example.productserviceproject.model.ErrorResponse;
 import com.example.productserviceproject.service.read.ProductReadService;
 import com.example.productserviceproject.service.write.ProductWriteService;
-import com.example.productserviceproject.model.Review;
-import org.axonframework.commandhandling.gateway.CommandGateway;
+import com.example.productserviceproject.model.command.Reviews;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -42,9 +41,9 @@ public class WriteProductController {
     private FileService fileService;
 
     // add new product
-    public ResponseEntity<?> addProduct(@ModelAttribute ProductCreateModel requestBody) {
+    public ResponseEntity<?> addProduct(@ModelAttribute ProductCreateModel requestBody, @RequestHeader(value = "Authorization", required = true) String token) {
         try {
-            String[] tokens = requestBody.getToken().split(" ");
+            String[] tokens = token.split(" ");
             // check token
             if (tokens.length > 1) {
                 String bearerToken = tokens[1];
@@ -94,9 +93,9 @@ public class WriteProductController {
     }
 
     // edit product info
-    public ResponseEntity<?> editProduct(@ModelAttribute ProductUpdateModel requestBody) {
+    public ResponseEntity<?> editProduct(@ModelAttribute ProductUpdateModel requestBody, @RequestHeader(value = "Authorization", required = true) String token) {
         try {
-            String[] tokens = requestBody.getToken().split(" ");
+            String[] tokens = token.split(" ");
             // check token
             if (tokens.length > 1) {
                 String bearerToken = tokens[1];
@@ -188,13 +187,38 @@ public class WriteProductController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Failed to delete product", "Invalid Token"));
     }
 
+    // Add review
+    public ResponseEntity<?> addReview(@PathVariable("product_id") String id, @ModelAttribute @Valid Reviews review, @RequestHeader(value = "Authorization", required = true) String token) {
+        try {
+            Optional<ProductModel> out = productReadService.getProductByIdService(id);
+            if (out.isEmpty()) {
+                ErrorResponse errorResponse = new ErrorResponse("Cannot add review", "Product not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+            this.validateReviewData(review);
+            ProductModel product = out.get();
+            List<Reviews> reviews = product.getReviews();
+            reviews.add(review);
+            double rating = calculateRating(reviews);
+            product.setRating(rating);
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            product.setEdit_at(now.toString());
+            ProductModel addReview = productWriteService.editProductService(product);
+            return ResponseEntity.ok("Review added successfully");
+        } catch (IllegalArgumentException ie) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Cannot add review", ie.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Cannot add review", e.getMessage()));
+        }
+    }
+
     // calculate rating
-    public double calculateRating(List<Review> reviews) {
+    public double calculateRating(List<Reviews> reviews) {
         if (reviews.size() == 0){
             return  0;
         }
         double totalRate = 0.0;
-        for (Review r : reviews) {
+        for (Reviews r : reviews) {
             totalRate += r.getRate();
         }
         double rating = totalRate / reviews.size();
@@ -231,14 +255,14 @@ public class WriteProductController {
         }
     }
 
-    public void validateReviewData(Review review) throws Exception {
-        if (review.getContent() == null || review.getContent().isBlank()) {
+    public void validateReviewData(Reviews reviews) throws Exception {
+        if (reviews.getContent() == null || reviews.getContent().isBlank()) {
             throw new IllegalArgumentException("Content is Required");
         }
-        if (review.getOwner_name() == null || review.getOwner_name().isBlank()) {
+        if (reviews.getOwner_name() == null || reviews.getOwner_name().isBlank()) {
             throw new IllegalArgumentException("Owner name is Required");
         }
-        if (review.getRate() > 5 || review.getRate() <= 0) {
+        if (reviews.getRate() > 5 || reviews.getRate() <= 0) {
             throw new IllegalArgumentException("Rating must be greater than zero and less than 5.");
         }
     }
