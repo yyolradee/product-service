@@ -1,9 +1,11 @@
 package com.example.productserviceproject.config;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@Data
 public class FirebaseConfig {
 
     @Value("${firebase.config.type}")
@@ -39,111 +41,20 @@ public class FirebaseConfig {
     @Value("${firebase.config.universe_domain}")
     private String universeDomain;
 
-    // Getters and setters
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
-    public String getPrivateKeyId() {
-        return privateKeyId;
-    }
-
-    public void setPrivateKeyId(String privateKeyId) {
-        this.privateKeyId = privateKeyId;
-    }
-
-    public String getPrivateKey() {
-        return privateKey;
-    }
-
-    public void setPrivateKey(String privateKey) {
-        this.privateKey = privateKey;
-    }
-
-    public String getClientEmail() {
-        return clientEmail;
-    }
-
-    public void setClientEmail(String clientEmail) {
-        this.clientEmail = clientEmail;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public String getAuthUri() {
-        return authUri;
-    }
-
-    public void setAuthUri(String authUri) {
-        this.authUri = authUri;
-    }
-
-    public String getTokenUri() {
-        return tokenUri;
-    }
-
-    public void setTokenUri(String tokenUri) {
-        this.tokenUri = tokenUri;
-    }
-
-    public String getAuthProviderX509CertUrl() {
-        return authProviderX509CertUrl;
-    }
-
-    public void setAuthProviderX509CertUrl(String authProviderX509CertUrl) {
-        this.authProviderX509CertUrl = authProviderX509CertUrl;
-    }
-
-    public String getClientX509CertUrl() {
-        return clientX509CertUrl;
-    }
-
-    public void setClientX509CertUrl(String clientX509CertUrl) {
-        this.clientX509CertUrl = clientX509CertUrl;
-    }
-
-    public String getUniverseDomain() {
-        return universeDomain;
-    }
-
-    public void setUniverseDomain(String universeDomain) {
-        this.universeDomain = universeDomain;
-    }
-
-    @Override
-    public String toString() {
-        return "FirebaseConfig{" +
-                "type='" + type + '\'' +
-                ", projectId='" + projectId + '\'' +
-                ", privateKeyId='" + privateKeyId + '\'' +
-                ", privateKey='" + privateKey + '\'' +
-                ", clientEmail='" + clientEmail + '\'' +
-                ", clientId='" + clientId + '\'' +
-                ", authUri='" + authUri + '\'' +
-                ", tokenUri='" + tokenUri + '\'' +
-                ", authProviderX509CertUrl='" + authProviderX509CertUrl + '\'' +
-                ", clientX509CertUrl='" + clientX509CertUrl + '\'' +
-                ", universeDomain='" + universeDomain + '\'' +
-                '}';
+    public String toJson() {
+        return "{" +
+                "\"type\": \"" + type + "\"," +
+                "\"project_id\": \"" + projectId + "\"," +
+                "\"private_key_id\": \"" + privateKeyId + "\"," +
+                "\"private_key\": \"" + privateKey.replace("\n", "\\n") + "\"," +  // Replace newline characters
+                "\"client_email\": \"" + clientEmail + "\"," +
+                "\"client_id\": \"" + clientId + "\"," +
+                "\"auth_uri\": \"" + authUri + "\"," +
+                "\"token_uri\": \"" + tokenUri + "\"," +
+                "\"auth_provider_x509_cert_url\": \"" + authProviderX509CertUrl + "\"," +
+                "\"client_x509_cert_url\": \"" + clientX509CertUrl + "\"," +
+                "\"universe_domain\": \"" + universeDomain + "\"" +
+                "}";
     }
 }
 

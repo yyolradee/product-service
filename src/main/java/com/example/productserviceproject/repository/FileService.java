@@ -27,34 +27,15 @@ public class FileService {
         BlobId blobId = BlobId.of("product-service-sop.appspot.com", fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType("media")
-                .setMetadata(Map.of("contentDisposition", "inline"))
+                .setMetadata(ImmutableMap.of("contentDisposition", "inline"))
                 .build();
 
-        // Decode the Base64-encoded private key
-        byte[] decodedBytes = Base64.getMimeDecoder().decode(firebaseConfig.getPrivateKey()
-                .replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s", ""));
+        // Use FirebaseConfig to get the credentials
+        GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(firebaseConfig.toJson().getBytes()));
 
-        // Convert the decoded bytes to a string
-        String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
-        System.out.println("Decoded String: " + decodedString);
-
-        // Create GoogleCredentials from the decoded string
-        Credentials credentials = GoogleCredentials.fromStream(
-                new ByteArrayInputStream(decodedString.getBytes())
-        );
-
-        // Use the credentials to create a Storage object
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-
-        // Upload the file to Google Cloud Storage
         Blob created = storage.create(blobInfo, Files.readAllBytes(file.toPath()));
-
-        // Delete the local file
         file.delete();
-
-        // Return the media link of the uploaded file
         return created.getMediaLink();
     }
 
@@ -84,8 +65,11 @@ public class FileService {
             objectName = fileUrl.substring(index + "product-service-sop.appspot.com".length() + 1);
             objectName = objectName.replaceAll("o/", "").replaceAll("\\?generation=\\d+&alt=media", "");
             System.out.println("Object name: " + objectName);
+
             try {
-                Credentials credentials = GoogleCredentials.fromStream(new FileInputStream("firebasePrivateKey.json"));
+                // Use FirebaseConfig to get the credentials
+                GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(firebaseConfig.toJson().getBytes()));
+
                 Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
                 BlobId blobId = BlobId.of("product-service-sop.appspot.com", objectName);
                 Blob blob = storage.get(blobId);
