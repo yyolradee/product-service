@@ -1,4 +1,4 @@
-package com.example.productserviceproject.POJO;
+package com.example.productserviceproject.model;
 
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,7 +12,6 @@ public class ProductRequest implements Serializable {
     private double price;
     private String category;
     private MultipartFile image;
-    private String shop_id;
 
     public ProductRequest() {
     }
@@ -23,6 +22,5 @@ public class ProductRequest implements Serializable {
         this.price = price;
         this.category = category;
         this.image = image;
-        this.shop_id = shop_id;
     }
 }

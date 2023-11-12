@@ -1,4 +1,4 @@
-package com.example.productserviceproject.POJO;
+package com.example.productserviceproject.model;
 
 import java.io.Serializable;
 
