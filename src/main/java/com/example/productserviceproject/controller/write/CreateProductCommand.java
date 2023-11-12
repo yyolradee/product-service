@@ -15,5 +15,4 @@ public class CreateProductCommand {
     private MultipartFile image;
     private double price;
     private String category;
-    private String token;
 }

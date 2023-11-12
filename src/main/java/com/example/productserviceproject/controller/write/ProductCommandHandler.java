@@ -50,6 +50,5 @@ public class ProductCommandHandler {
         this.edit_at = productCreatedEvent.getEdit_at();
         this.shop_id = productCreatedEvent.getShop_id();
         this.reviews = productCreatedEvent.getReviews();
-
     }
 }
